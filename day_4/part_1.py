@@ -52,12 +52,6 @@ class gameBoard:
 
         return score * int(ans)
 
-
-
-
-
-
-
 def main():
 
     boards = []
@@ -97,10 +91,6 @@ def main():
                 print(f'Board {i} WON')
                 print(f'{board.get_score(ans)}')
                 return
-    
-
-        
-
 
 if __name__ == "__main__":
     main()
