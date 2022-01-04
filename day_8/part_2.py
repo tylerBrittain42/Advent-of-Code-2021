@@ -1,24 +1,6 @@
-class decNum:
-    
-    def __init__(self, val, length):
-        self.real = val
-        self.length = length
-        self.grid = [None]*7
-        # print(self.grid)
-
-    def __repr__(self) -> str:
-        return f'{self.real} {self.length}'
-
-
+# alphabetizies a string
 def alpha(sstring):
     return ''.join(sorted(sstring))
-
-def char_count(sstring, target):
-    count = 0
-    for char in sstring:
-        if char == target:
-            count += 1
-    return count
 
 # returns a list of characters that are not shared by the two strings
 def isMissing(s1, s2):
@@ -43,6 +25,7 @@ def isMissing(s1, s2):
 
     return sorted(missing)
 
+# Checks if all the characters in a given string are in another string
 def has(big, small):
     while len(small) > 0:
         if small[0] in big:
@@ -51,35 +34,28 @@ def has(big, small):
             return False
     return True
 
+# returns a key, given a value
 def val_to_key(mapp, val):
     return list(mapp.keys())[list(mapp.values()).index(val)]
 
+
 def main():
 
-    letters = ['a','b','c','d','e','f','g']
-    
-    # values that we still need to find
-    toFind = [0,1,2,3,4,5,6,7,8,9]
-
-    # len of unique vals and ref map
-    toFind_u = [2,3,4,7,8]
-    unique = {2:1,3:7,4:4,7:8}
-
-    table = [None] * 7
-
-    num_to_code = {}
-
-
-    numToLength = {0:6,1:2,2:5,3:5,4:4,5:5,6:6,7:3,8:7,9:6}
-
-    # ans key that we are building
-    key = {}
-
+    sum = 0    
     with open('input.txt') as f:
 
         line = f.readline()
-
         while(line):
+
+            # values that we still need to find
+            toFind = [0,1,2,3,4,5,6,7,8,9]
+
+            # len of unique vals and ref map
+            unique_lengths = [2,3,4,7,8]
+            # Len : Val
+            unique = {2:1,3:7,4:4,7:8}
+            # ans key that we are building
+            key = {}
 
             # getting input
             line = line.rstrip('\n').split('|')
@@ -87,47 +63,79 @@ def main():
             outputs = line[1].split(' ')
 
             # making data alphabetical
-            outputs = map(alpha,outputs)
-            patterns = map(alpha,patterns)
+            outputs = list(map(alpha,outputs))
+            patterns = list(map(alpha,patterns))
 
-
-            # Filtering out for unique values                
-            # for i in outputs:      
-            #     if len(i) in toFind_u:
-            #         key[i] = unique[len(i)]
-            #         toFind_u.remove(len(i))
-            #         toFind.remove(unique[len(i)])
-
+            # Finding the unique values
             for i in patterns:      
-                if len(i) in toFind_u:
+                if len(i) in unique_lengths:
                     key[i] = unique[len(i)]
-                    toFind_u.remove(len(i))
-                    toFind.remove(unique[len(i)])
+                    unique_lengths.remove(len(i))
+                    toFind.remove(unique[len(i)]) 
 
-            for char in letters:
-                cur_count = char_count(line[0],char)
-                if cur_count == 7:
-                    table[3] = char
-                elif cur_count == 4:
-                    table[4] = char
-                elif cur_count == 9:
-                    table[5] = char
+                        
+            # grabbing nonunique values by length
+            fives = []
+            sixes = []
+            for i in patterns:
+                if len(i) == 5:
+                    fives.append(i)
+                elif len(i) == 6:
+                    sixes.append(i)
+        
+            # Finding 3 by overlaying 7
+            for i in fives:
+                if has(i,val_to_key(key,7)):
+                    key[i] = 3
+                    toFind.remove(3)
+                    break
+            fives.remove(val_to_key(key,3))
 
-            table[0] = isMissing(val_to_key(key,1),val_to_key(key,7))[0]
+            # Finding 9 by overlaying 4
+            for i in sixes:
+                if has(i,val_to_key(key,4)):
+                    key[i] = 9
+                    toFind.remove(9)
+                    break
+            sixes.remove(val_to_key(key,9))
 
-            print(table)
+            # Finding zero by overlaying 7
+            for i in sixes:
+                if has(i,val_to_key(key,7)):
+                    key[i] = 0
+                    toFind.remove(0)
+                    break
 
-            
-                
+            # The remaining value must be 6
+            sixes.remove(val_to_key(key,0))
+            key[sixes[0]] = 6
+            toFind.remove(6)
+
+            if len(isMissing(val_to_key(key,4),fives[0])) == 3:
+                key[fives[0]] = 5
+                key[fives[1]] = 2
+            else:
+                key[fives[0]] = 2
+                key[fives[1]] = 5
+            toFind.remove(2)
+            toFind.remove(5)
+                            
             line = f.readline()
 
-            # print(has('abc','as'))
-
-            print(key)
-            finding_b = isMissing(val_to_key(key,4),val_to_key(key,7))
-
-            print(finding_b)
             
+            # parse answer
+            ans = []
+
+            while '' in outputs:
+                outputs.remove('')
+
+            for i in outputs:
+                ans.append(str(key[i]))
+            ans = ''.join(ans)
+            
+            sum += int(ans)
+
+        print(sum)
 
 if __name__ == '__main__':
     main()
