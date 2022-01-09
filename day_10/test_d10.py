@@ -5,6 +5,8 @@ import part_2 as p2
 valid = ['([])','{()()()}','<([{}])>','[<>({}){}[([])<>]]','(((((((((())))))))))']
 invalid = ['{([(<{}[<>[]}>{[]{[(<()>','[[<[([]))<([[{}[[()]]]','[{[{({}]{}}([{[{{{}}([]','[<(<(<(<{}))><([]([]()','<{([([[(<>()){}]>(<<{{']
 incomplete = ['[({(<(())[]>[[{[]{<()<>>','[(()[<>])]({[<{<<[]>>(','(((({<>}<{<{<>}{[]{[]{}','{<[[]]>}<{[{[{[]{()[[[]','<{([{{}}[<[[[<>{}]]]>[]]']
+incomplete_remainder = ['}}]])})]',')}>]})','}}>}>))))',']]}}]}]}>','])}>']
+incomplete_points = [288957, 5566, 1480781, 995444, 294]
 
 #### Part One Tests ####
  
@@ -27,7 +29,7 @@ def test_is_valid():
         assert p1.is_valid(seq,open,close) == False
         
 
-def test_calc():
+def test_calc_invalid():
 
     open = ['(','[','{','<']
     close = [')',']','}','>']
@@ -45,6 +47,18 @@ def test_is_complete():
     close = [')',']','}','>']
 
     for seq in valid:
-        assert p2.is_complete(seq,open,close) == True
-    for seq in invalid:
-        assert p2.is_complete(seq,open,close) == False
+        assert len(p2.is_complete(seq,open,close)) == 0
+    for seq in incomplete:
+        assert len(p2.is_complete(seq,open,close)) > 0
+
+def test_calc_complete():
+
+    open = ['(','[','{','<']
+    close = [')',']','}','>']
+
+    for i, seq in enumerate(incomplete):
+        print('fuck')
+        assert p2.calc_score(p2.is_complete(seq,open,close)) == incomplete_points[i]
+
+
+
