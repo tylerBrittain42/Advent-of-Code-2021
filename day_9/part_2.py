@@ -1,4 +1,3 @@
-from os import POSIX_FADV_RANDOM
 
 
 def toArray(input):
