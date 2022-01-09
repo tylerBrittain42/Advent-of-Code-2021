@@ -1,3 +1,6 @@
+from os import POSIX_FADV_RANDOM
+
+
 def toArray(input):
     return list(map(int,list(input)))
 
@@ -30,34 +33,32 @@ def isLow(map, i, j):
     return True
 
 
-def bfs_size(map,low_points):
+def bfs_size(map,root):
 
-    low_points = [0,0]
-    queue = []
-    queue.append(low_points)
-    queue.extend(explore(map,low_points[0],low_points[1]))
-    visited = low_points
-    visited.extend([explore(map,low_points[0],low_points[1])])
+    to_visit = []
+    to_visit.append(root)
 
-    count = 0
-    while len(queue) != 0:
+    visited = []
+    visited.append(root)
 
-        # adding a new node
-        node = queue.pop(0)
-        visited.append(node)
 
-        # adding node's nieghbors
-        neighbors = explore(map, node[0],node[1])
-        for point in neighbors:
-            if point not in visited:
-                queue.append(point)
+    while len(to_visit) > 0:
+        node = to_visit.pop(0)
+        # visited.append(node)
 
-        print(f'{node}: {map[node[0]][node[1]]}')
+        # print(node)
+
+        neighbors = explore(map,node[0],node[1])
+        for i in neighbors:
+            if i not in visited and map[i[0]][i[1]] != 9:
+                visited.append(i)
+                to_visit.append(i)
         
-        count += 1
-        if count == 10 : 
-            return
-    return
+
+
+
+    return len(visited)
+
 
 #returns list of adjacent points in clockwise formation
 def explore(map,row,col):
@@ -81,11 +82,7 @@ def explore(map,row,col):
     # left
     if col > 0:
         neighbors.append([row, col - 1])
-
-    
-
-    # for i in neighbors:
-    #     print(f'{i}: {map[i[0]][i[1]]}')    
+  
     return neighbors
 
 
@@ -95,7 +92,7 @@ def main():
     
     map = []
     low_points =[]
-    sum = 0
+    biggest = []
 
     # set up
     with open('/home/tyler/Documents/assorted_code/Advent-of-Code-2021/day_9/input.txt') as f:
@@ -107,13 +104,14 @@ def main():
     for i, row in enumerate(map):
         for j, ele in enumerate(row):
             if isLow(map,i,j):
-                sum += map[i][j] + 1
                 low_points.append([i,j])
     
-    # print(sum)
-    # print(low_points)
+    for i in low_points:
+        biggest.append(bfs_size(map,i))
+    biggest.sort(reverse=True)
+    print(biggest)
 
-    # bfs_size(map,low_points)
-    explore(map,1,1)
+    print(f' The product of {biggest[0]} x {biggest[1]} x {biggest[2]} is {biggest[0]*biggest[1]*biggest[2]}')
+
 if __name__ == '__main__':
     main()
