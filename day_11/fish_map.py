@@ -4,6 +4,7 @@ class MapMaker:
     def __init__(self):
         self.mapp = []
         self.flash_count = 0
+        self.day = 0
 
     def add_row(self, row):
         self.mapp.append(row)
@@ -48,7 +49,8 @@ class MapMaker:
         return self.mapp
 
     def increment_step(self):
-
+        max_flash = len(self.mapp) ** 2
+        cur_flash = 0
         repeat = True
 
         # Incrementing all values by one
@@ -64,7 +66,13 @@ class MapMaker:
                     if self.mapp[i][j] > 9:
                         self.mapp[i][j] = -1
                         self.flash(i,j)
+                        cur_flash += 1
                         repeat = True
+        
+        if cur_flash == max_flash:
+            print(f'All Flashed at day {self.day + 1}')
+        self.day += 1
+
 
         # resetting flashed values
         for i,row in enumerate(self.mapp):
